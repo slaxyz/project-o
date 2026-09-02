@@ -44,6 +44,24 @@ public class WolfPackSpawner : MonoBehaviour
         }
     }
 
+    public bool DebugSpawnAnimal()
+    {
+        if (!Application.isPlaying || wolfPrefab == null || player == null) return false;
+
+        Vector3 position = player.position + player.forward * 5f;
+        position.y = 0f;
+        List<WolfAgent> debugPack = new List<WolfAgent>();
+        GameObject instance = Instantiate(wolfPrefab, position,
+            Quaternion.Euler(0f, Random.Range(0f, 360f), 0f), transform);
+        instance.name = "DebugTiger";
+
+        WolfAgent animal = instance.GetComponent<WolfAgent>();
+        if (animal == null) animal = instance.AddComponent<WolfAgent>();
+        animal.Configure(position, 6f, debugPack, player, wolfHealth, meatPerWolf);
+        debugPack.Add(animal);
+        return true;
+    }
+
     public void Configure(GameObject newWolfPrefab, Transform newPlayer, int newPackSize, int newMaxActivePacks)
     {
         wolfPrefab = newWolfPrefab;

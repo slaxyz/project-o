@@ -110,6 +110,22 @@ public class ResourceInventory : MonoBehaviour
         return true;
     }
 
+    public void DebugSetMoney(int amount)
+    {
+        Money = Mathf.Max(0, amount);
+        RefreshHud();
+        hud?.PulseMoney();
+    }
+
+    public void DebugFillWood()
+    {
+        for (int index = 0; index < carried.Length; index++) carried[index] = 0;
+        carried[(int)ResourceType.Wood] = capacity;
+        CarriedTotal = capacity;
+        RefreshHud();
+        CarriedChanged?.Invoke();
+    }
+
     private void RefreshHud()
     {
         if (hud == null) return;

@@ -24,6 +24,11 @@ public static class WorldSetup
     private const string TreePrefabPath = "Assets/Prefabs/ForestTreePlaceholder.prefab";
     private const string WolfPrefabPath = "Assets/Prefabs/WolfPlaceholder.prefab";
     private const string MillPrefabPath = "Assets/Prefabs/LumberMill.prefab";
+    private const string ImportedTreePrefabPath = "Assets/ithappy/Apocalypse_Free/Prefabs/Environment/Pine_01.prefab";
+    private const string ImportedPlayerPrefabPath = "Assets/ithappy/Apocalypse_Free/Prefabs/Characters/Adult_Woodcutter/Adult_Woodcutter.prefab";
+    private const string ImportedAnimalPrefabPath = "Assets/Animals_FREE/Prefabs/Tiger_001.prefab";
+    private const string ImportedAxePrefabPath = "Assets/Weapons_FREE/Prefabs/axe_001.prefab";
+    private const string ImportedFoodPrefabPath = "Assets/ithappy/Food_Free/Prefabs/Burger_001.prefab";
     private static readonly string[] ToolPrefabPaths =
     {
         "Assets/Prefabs/Tool_Axe.prefab",
@@ -236,10 +241,15 @@ public static class WorldSetup
         GameObject root = new GameObject("ForestTreePlaceholder");
         root.layer = harvestableLayer;
 
-        AddMesh(root.transform, "Trunk", EnsureTrunkMesh(), Vector3.zero, new Vector3(0.3f, 0.7f, 0.3f), palette.trunk);
-        AddMesh(root.transform, "CrownLow", cone, new Vector3(0f, 0.42f, 0f), new Vector3(1.5f, 1.45f, 1.5f), palette.leafLow);
-        AddMesh(root.transform, "CrownMid", cone, new Vector3(0f, 1.32f, 0f), new Vector3(1.08f, 1.2f, 1.08f), palette.leafLow);
-        AddMesh(root.transform, "CrownTop", cone, new Vector3(0f, 2.05f, 0f), new Vector3(0.62f, 0.9f, 0.62f), palette.leafHigh);
+        GameObject importedTree = AttachImportedVisual(root.transform, ImportedTreePrefabPath,
+            "ImportedPineVisual", 3.4f);
+        if (importedTree == null)
+        {
+            AddMesh(root.transform, "Trunk", EnsureTrunkMesh(), Vector3.zero, new Vector3(0.3f, 0.7f, 0.3f), palette.trunk);
+            AddMesh(root.transform, "CrownLow", cone, new Vector3(0f, 0.42f, 0f), new Vector3(1.5f, 1.45f, 1.5f), palette.leafLow);
+            AddMesh(root.transform, "CrownMid", cone, new Vector3(0f, 1.32f, 0f), new Vector3(1.08f, 1.2f, 1.08f), palette.leafLow);
+            AddMesh(root.transform, "CrownTop", cone, new Vector3(0f, 2.05f, 0f), new Vector3(0.62f, 0.9f, 0.62f), palette.leafHigh);
+        }
 
         CapsuleCollider trunkCollider = root.AddComponent<CapsuleCollider>();
         trunkCollider.center = new Vector3(0f, 1.2f, 0f);
@@ -300,7 +310,12 @@ public static class WorldSetup
 
         WolfAgent wolf = root.AddComponent<WolfAgent>();
         SerializedObject serializedWolf = new SerializedObject(wolf);
-        serializedWolf.FindProperty("visualRoot").objectReferenceValue = visual.transform;
+        GameObject importedAnimal = AttachImportedVisual(shake.transform, ImportedAnimalPrefabPath,
+            "ImportedAnimalVisual", 1.45f);
+        if (importedAnimal != null) visual.SetActive(false);
+        serializedWolf.FindProperty("visualRoot").objectReferenceValue = importedAnimal != null
+            ? importedAnimal.transform
+            : visual.transform;
         serializedWolf.FindProperty("head").objectReferenceValue = headPivot.transform;
         serializedWolf.FindProperty("tail").objectReferenceValue = tailPivot.transform;
         SerializedProperty legsProperty = serializedWolf.FindProperty("legs");
@@ -344,9 +359,18 @@ public static class WorldSetup
         GameObject[] prefabs = new GameObject[Tools.Count];
 
         GameObject axe = new GameObject("Tool_Axe");
-        AddHandle(axe.transform, palette.wood, 0.3f);
-        AddPrimitive(axe.transform, PrimitiveType.Cube, "Blade", new Vector3(0f, -0.56f, 0.06f), new Vector3(0.2f, 0.22f, 0.07f), palette.steel);
-        AddPrimitive(axe.transform, PrimitiveType.Cube, "Edge", new Vector3(0f, -0.56f, 0.14f), new Vector3(0.1f, 0.26f, 0.05f), palette.steel);
+        GameObject importedAxe = AttachImportedVisual(axe.transform, ImportedAxePrefabPath,
+            "ImportedAxeVisual", 1.05f);
+        if (importedAxe == null)
+        {
+            AddHandle(axe.transform, palette.wood, 0.3f);
+            AddPrimitive(axe.transform, PrimitiveType.Cube, "Blade", new Vector3(0f, -0.56f, 0.06f), new Vector3(0.2f, 0.22f, 0.07f), palette.steel);
+            AddPrimitive(axe.transform, PrimitiveType.Cube, "Edge", new Vector3(0f, -0.56f, 0.14f), new Vector3(0.1f, 0.26f, 0.05f), palette.steel);
+        }
+        else
+        {
+            ReplaceImportedMaterials(importedAxe, palette.wood, palette.steel);
+        }
         prefabs[0] = SavePrefab(axe, ToolPrefabPaths[0]);
 
         GameObject golden = new GameObject("Tool_GoldenAxe");
@@ -543,6 +567,22 @@ public static class WorldSetup
         {
             player.transform.position = new Vector3(0f, 0f, -3f);
             player.transform.rotation = Quaternion.identity;
+            ReplacePlayerVisual(player);
+        }
+    }
+
+    private static void ReplacePlayerVisual(GameObject player)
+    {
+        Transform previous = player.transform.Find("ImportedPlayerVisual");
+        if (previous != null) UnityEngine.Object.DestroyImmediate(previous.gameObject);
+
+        GameObject imported = AttachImportedVisual(player.transform, ImportedPlayerPrefabPath,
+            "ImportedPlayerVisual", 1.9f);
+        if (imported == null) return;
+
+        foreach (Renderer renderer in player.GetComponentsInChildren<Renderer>(true))
+        {
+            if (!renderer.transform.IsChildOf(imported.transform)) renderer.enabled = false;
         }
     }
 
@@ -742,6 +782,7 @@ public static class WorldSetup
     {
         GameObject root = new GameObject("CampFurniture");
         CreateTrapdoor(root.transform, palette);
+        CreateCampFoodProp(root.transform);
 
         // Build plot, revealed by the level two upgrade.
         GameObject plot = new GameObject("BuildPlot");
@@ -770,6 +811,14 @@ public static class WorldSetup
         plot.SetActive(false);
 
         return root;
+    }
+
+    private static void CreateCampFoodProp(Transform parent)
+    {
+        GameObject prop = new GameObject("CampRations");
+        prop.transform.SetParent(parent, false);
+        prop.transform.localPosition = new Vector3(1.65f, 0.22f, -1.45f);
+        AttachImportedVisual(prop.transform, ImportedFoodPrefabPath, "ImportedFoodVisual", 0.65f);
     }
 
     private static GameObject CreateForest(GameObject treePrefab)
@@ -1413,6 +1462,62 @@ public static class WorldSetup
 
     // ----- helpers ------------------------------------------------------------
 
+    /// Wraps a package prefab as a visual-only child. Gameplay colliders and
+    /// behaviours stay on the generated root, so imported demo setup cannot leak
+    /// into the playable scene.
+    private static GameObject AttachImportedVisual(Transform parent, string assetPath,
+        string instanceName, float targetHeight)
+    {
+        GameObject source = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+        if (source == null) return null;
+
+        GameObject instance = PrefabUtility.InstantiatePrefab(source) as GameObject;
+        if (instance == null) return null;
+
+        instance.name = instanceName;
+        instance.transform.SetParent(parent, false);
+        instance.transform.localPosition = Vector3.zero;
+        instance.transform.localRotation = Quaternion.identity;
+        instance.transform.localScale = Vector3.one;
+
+        foreach (Collider collider in instance.GetComponentsInChildren<Collider>(true))
+            UnityEngine.Object.DestroyImmediate(collider);
+        foreach (MonoBehaviour behaviour in instance.GetComponentsInChildren<MonoBehaviour>(true))
+            UnityEngine.Object.DestroyImmediate(behaviour);
+
+        NormalizeImportedVisual(instance.transform, targetHeight);
+        return instance;
+    }
+
+    private static void NormalizeImportedVisual(Transform root, float targetHeight)
+    {
+        Renderer[] renderers = root.GetComponentsInChildren<Renderer>(true);
+        if (renderers.Length == 0) return;
+
+        Bounds bounds = renderers[0].bounds;
+        for (int index = 1; index < renderers.Length; index++) bounds.Encapsulate(renderers[index].bounds);
+
+        float height = Mathf.Max(0.01f, bounds.size.y);
+        float scale = targetHeight / height;
+        root.localScale = Vector3.one * scale;
+        root.localPosition = new Vector3(0f, -bounds.min.y * scale, 0f);
+    }
+
+    private static void ReplaceImportedMaterials(GameObject root, Material body, Material metal)
+    {
+        foreach (Renderer renderer in root.GetComponentsInChildren<Renderer>(true))
+        {
+            string name = renderer.name.ToLowerInvariant();
+            bool isMetal = name.Contains("blade") || name.Contains("head") || name.Contains("edge")
+                || name.Contains("iron") || name.Contains("metal");
+            Material replacement = isMetal ? metal : body;
+            Material[] materials = renderer.sharedMaterials;
+            if (materials == null || materials.Length == 0) materials = new[] { replacement };
+            else for (int index = 0; index < materials.Length; index++) materials[index] = replacement;
+            renderer.sharedMaterials = materials;
+        }
+    }
+
     private static Transform AddPrimitive(Transform parent, PrimitiveType type, string name,
         Vector3 position, Vector3 scale, Material material, bool keepCollider = false)
     {
@@ -1573,6 +1678,11 @@ public static class WorldSetup
         Require(AssetDatabase.LoadAssetAtPath<GameObject>(FencePrefabPath) != null, "Fence prefab", results);
         Require(AssetDatabase.LoadAssetAtPath<GameObject>(WolfPrefabPath) != null, "Wolf prefab", results);
         Require(AssetDatabase.LoadAssetAtPath<GameObject>(MillPrefabPath) != null, "Lumber mill prefab", results);
+        Require(AssetDatabase.LoadAssetAtPath<GameObject>(ImportedTreePrefabPath) != null, "Apocalypse tree asset", results);
+        Require(AssetDatabase.LoadAssetAtPath<GameObject>(ImportedPlayerPrefabPath) != null, "Apocalypse character asset", results);
+        Require(AssetDatabase.LoadAssetAtPath<GameObject>(ImportedAnimalPrefabPath) != null, "Animal asset", results);
+        Require(AssetDatabase.LoadAssetAtPath<GameObject>(ImportedAxePrefabPath) != null, "Weapon asset", results);
+        Require(AssetDatabase.LoadAssetAtPath<GameObject>(ImportedFoodPrefabPath) != null, "Food asset", results);
         for (int index = 0; index < ToolPrefabPaths.Length; index++)
         {
             Require(AssetDatabase.LoadAssetAtPath<GameObject>(ToolPrefabPaths[index]) != null,
@@ -1584,11 +1694,15 @@ public static class WorldSetup
         GameObject treePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(TreePrefabPath);
         Require(treePrefab != null && treePrefab.GetComponent<Harvestable>() != null, "Trees have hit points", results);
         Require(treePrefab.layer == LayerMask.NameToLayer(HarvestableLayerName), "Trees on the harvestable layer", results);
-        Require(treePrefab.GetComponentsInChildren<MeshFilter>(true).Length == 4, "Conifer trunk and three cones", results);
+        Require(treePrefab.GetComponentsInChildren<Renderer>(true).Length > 0, "Tree has a rendered visual", results);
+        Require(treePrefab.transform.Find("ImportedPineVisual") != null
+            || treePrefab.GetComponentsInChildren<MeshFilter>(true).Length == 4,
+            "Imported pine or procedural fallback", results);
 
         PlayerMovement movement = UnityEngine.Object.FindFirstObjectByType<PlayerMovement>();
         Require(movement.GetComponent<ToolSwing>() != null, "Player swings the tool", results);
         Require(movement.GetComponent<EquipmentInventory>() != null, "Equipment inventory", results);
+        Require(movement.transform.Find("ImportedPlayerVisual") != null, "Imported player visual", results);
 
         // Bags are equipment, not levels, so the starter bag has to be the 100 slot
         // one and every later bag has to be a real jump.
