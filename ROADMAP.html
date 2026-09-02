@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Olympus Harvest | Roadmap</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
+
+    :root {
+      --ink: #182d3d;
+      --muted: #607988;
+      --paper: #f4f7f2;
+      --card: rgba(255, 255, 255, .78);
+      --line: #d9e5e1;
+      --blue: #246783;
+      --blue-deep: #163f59;
+      --gold: #d99b46;
+      --gold-soft: #f6e3ba;
+      --green: #4e8c73;
+      --shadow: 0 24px 70px rgba(24, 45, 61, .12);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: 'Manrope', system-ui, sans-serif;
+      line-height: 1.55;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0 0 auto;
+      height: 460px;
+      z-index: -1;
+      background:
+        radial-gradient(circle at 80% 15%, rgba(217, 155, 70, .24), transparent 22%),
+        radial-gradient(circle at 12% 30%, rgba(83, 153, 171, .24), transparent 28%),
+        linear-gradient(145deg, #d9edf0 0%, #eef5ee 52%, #f4f7f2 100%);
+      clip-path: polygon(0 0, 100% 0, 100% 83%, 82% 78%, 62% 88%, 40% 77%, 19% 89%, 0 80%);
+    }
+
+    .shell { width: min(1120px, calc(100% - 36px)); margin: 0 auto; }
+    .hero { padding: 72px 0 44px; display: grid; grid-template-columns: 1fr 290px; gap: 48px; align-items: end; }
+    .eyebrow { color: var(--blue); text-transform: uppercase; letter-spacing: .18em; font-size: .72rem; font-weight: 700; }
+    h1, h2, h3 { font-family: 'Cinzel', Georgia, serif; line-height: 1.15; margin: 0; }
+    h1 { max-width: 760px; margin-top: 14px; font-size: clamp(2.4rem, 6vw, 5.2rem); letter-spacing: -.04em; }
+    .hero p { max-width: 650px; margin: 22px 0 0; color: var(--muted); font-size: 1.06rem; }
+    .sigil { position: relative; width: 190px; height: 190px; margin-left: auto; border: 1px solid rgba(36, 103, 131, .25); border-radius: 50%; display: grid; place-items: center; color: var(--blue-deep); }
+    .sigil::before, .sigil::after { content: ''; position: absolute; inset: 13px; border: 1px solid rgba(217, 155, 70, .62); border-radius: 50%; }
+    .sigil::after { inset: 42px; border-style: dashed; }
+    .sigil span { text-align: center; font-family: 'Cinzel', Georgia, serif; font-size: 2.6rem; line-height: 1; }
+    .sigil small { display: block; margin-top: 8px; font-family: 'Manrope', sans-serif; font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; }
+
+    .progress-card { background: var(--card); border: 1px solid rgba(255, 255, 255, .8); border-radius: 22px; padding: 22px; box-shadow: var(--shadow); backdrop-filter: blur(12px); }
+    .progress-top { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; }
+    .progress-top strong { color: var(--blue); font-size: 1.8rem; font-family: 'Cinzel', Georgia, serif; }
+    .progress-top span { color: var(--muted); font-size: .78rem; }
+    .bar { height: 9px; margin: 16px 0 10px; overflow: hidden; background: #dce8e5; border-radius: 99px; }
+    .bar i { display: block; width: 0; height: 100%; background: linear-gradient(90deg, var(--blue), var(--green), var(--gold)); border-radius: inherit; transition: width .35s ease; }
+    .progress-note { margin: 0; color: var(--muted); font-size: .82rem; }
+
+    main { padding-bottom: 80px; }
+    .intro { display: grid; grid-template-columns: 1.4fr .8fr; gap: 18px; margin-bottom: 28px; }
+    .panel { padding: 25px 27px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.62); }
+    .panel h2 { margin-bottom: 12px; font-size: 1.2rem; }
+    .loop { color: var(--blue-deep); font-family: 'Cinzel', Georgia, serif; font-size: 1.05rem; }
+    .panel p { margin: 0; color: var(--muted); }
+    .pill { display: inline-block; margin-top: 14px; padding: 6px 10px; border-radius: 99px; color: #7b5722; background: var(--gold-soft); font-size: .72rem; font-weight: 700; }
+
+    .roadmap { display: grid; gap: 13px; }
+    details { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: var(--card); box-shadow: 0 8px 24px rgba(24, 45, 61, .05); }
+    summary { display: flex; gap: 18px; align-items: center; padding: 20px 23px; cursor: pointer; list-style: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: '+'; margin-left: auto; color: var(--gold); font-size: 1.5rem; font-weight: 300; }
+    details[open] summary::after { content: '−'; }
+    .number { flex: 0 0 auto; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; color: white; background: var(--blue-deep); font-family: 'Cinzel', Georgia, serif; font-size: .85rem; }
+    .summary-copy { min-width: 0; }
+    .summary-copy h3 { font-size: 1.05rem; }
+    .summary-copy p { margin: 4px 0 0; color: var(--muted); font-size: .84rem; }
+    .section-count { margin-left: auto; color: var(--muted); font-size: .74rem; white-space: nowrap; }
+    .tasks { display: grid; gap: 4px; padding: 0 23px 22px 79px; }
+    label { display: flex; gap: 12px; align-items: flex-start; padding: 9px 10px; margin-left: -10px; border-radius: 10px; cursor: pointer; color: #315160; font-size: .9rem; transition: background .2s ease, color .2s ease; }
+    label:hover { background: rgba(217, 155, 70, .1); }
+    input { flex: 0 0 auto; appearance: none; width: 19px; height: 19px; margin: 1px 0 0; border: 1.5px solid #9bb6b8; border-radius: 6px; background: #fff; cursor: pointer; }
+    input:checked { border-color: var(--green); background: var(--green); }
+    input:checked::after { content: '✓'; display: grid; place-items: center; height: 100%; color: white; font-size: .8rem; font-weight: 700; }
+    label:has(input:checked) { color: #819395; text-decoration: line-through; text-decoration-color: #a6c2bb; }
+
+    .footer { display: flex; justify-content: space-between; align-items: center; gap: 18px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--muted); font-size: .8rem; }
+    button { border: 1px solid #c9d9d5; border-radius: 99px; padding: 9px 14px; color: var(--blue-deep); background: transparent; font: inherit; font-size: .76rem; cursor: pointer; }
+    button:hover { border-color: var(--gold); color: #7b5722; }
+
+    @media (max-width: 720px) {
+      .shell { width: min(100% - 24px, 560px); }
+      .hero { display: block; padding-top: 42px; }
+      .hero p { font-size: .94rem; }
+      .sigil { width: 115px; height: 115px; margin: 30px 0 0 auto; }
+      .sigil span { font-size: 1.55rem; }
+      .sigil small { font-size: .42rem; }
+      .intro { grid-template-columns: 1fr; }
+      .panel { padding: 20px; }
+      summary { padding: 17px 15px; gap: 11px; }
+      .number { width: 31px; height: 31px; font-size: .72rem; }
+      .summary-copy h3 { font-size: .92rem; }
+      .summary-copy p { font-size: .75rem; }
+      .section-count { display: none; }
+      .tasks { padding: 0 15px 18px 57px; }
+      label { font-size: .82rem; }
+      .footer { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="shell hero">
+    <div>
+      <div class="eyebrow">Projet Unity · document vivant</div>
+      <h1>Olympus<br>Harvest</h1>
+      <p>La roadmap du premier prototype : un paysan, une forêt, un camp à rebâtir et une boucle de récolte assez satisfaisante pour donner envie d'aller toujours plus loin.</p>
+    </div>
+    <div class="sigil" aria-label="Olympus Harvest"><span>OH<small>Phase I</small></span></div>
+  </header>
+
+  <main class="shell">
+    <section class="progress-card" aria-label="Progression globale">
+      <div class="progress-top"><span>Avancement du MVP</span><strong id="percent">0%</strong></div>
+      <div class="bar"><i id="progress"></i></div>
+      <p class="progress-note" id="progressNote">Le premier chantier commence ici.</p>
+    </section>
+
+    <section class="intro">
+      <div class="panel">
+        <h2>La boucle à valider</h2>
+        <p class="loop">Camp → Exploration → Récolte → Retour → Amélioration → Nouvelle zone</p>
+      </div>
+      <div class="panel">
+        <h2>Le cap du MVP</h2>
+        <p>Mobile vertical, vue 3D top-down, contrôle tactile et récolte automatique.</p>
+        <span class="pill">Gacha et combat : plus tard</span>
+      </div>
+    </section>
+
+    <section class="roadmap" id="roadmap">
+      <details open data-section>
+        <summary><span class="number">01</span><span class="summary-copy"><h3>Fondations Unity</h3><p>Installer le terrain de jeu et l'organisation du projet.</p></span><span class="section-count"></span></summary>
+        <div class="tasks">
+          <label><input type="checkbox">Créer le projet Unity 3D.</label>
+          <label><input type="checkbox">Configurer le jeu en orientation portrait.</label>
+          <label><input type="checkbox">Créer une scène de test avec sol, lumière et caméra.</label>
+          <label><input type="checkbox">Définir une résolution de référence 1080 × 1920.</label>
+          <label><input type="checkbox">Créer les dossiers Scenes, Scripts, Prefabs, Materials, Models, UI et Audio.</label>
+        </div>
+      </details>
+
+      <details data-section>
+        <summary><span class="number">02</span><span class="summary-copy"><h3>Direction visuelle & assets</h3><p>Donner au prototype une silhouette et une ambiance immédiatement lisibles.</p></span><span class="section-count"></span></summary>
+        <div class="tasks">
+          <label><input type="checkbox">Définir la palette et la référence visuelle mythologique.</label>
+          <label><input type="checkbox">Créer ou importer un personnage placeholder lisible vu du dessus.</label>
+          <label><input type="checkbox">Créer le sol, les arbres et les rochers placeholder.</label>
+          <label><input type="checkbox">Créer les prefabs des ressources récoltables.</label>
+          <label><input type="checkbox">Créer le prefab du camp et du bâtiment améliorable.</label>
+          <label><input type="checkbox">Ajouter des matériaux simples, colorés et lisibles sur mobile.</label>
+          <label><input type="checkbox">Lister les assets définitifs à produire après validation du gameplay.</label>
+        </div>
+      </details>
+
+      <details data-section>
+        <summary><span class="number">03</span><span class="summary-copy"><h3>Joueur & caméra</h3><p>Rendre le déplacement agréable dans un écran vertical.</p></span><span class="section-count"></span></summary>
+        <div class="tasks">
+          <label><input type="checkbox">Ajouter le personnage placeholder dans la scène.</label>
+          <label><input type="checkbox">Implémenter le déplacement avec joystick virtuel.</label>
+          <label><input type="checkbox">Ajouter une caméra top-down légèrement inclinée qui suit le joueur.</label>
+          <label><input type="checkbox">Limiter le déplacement aux zones jouables.</label>
+          <label><input type="checkbox">Ajouter une animation ou un feedback de déplacement.</label>
+        </div>
+      </details>
+
+      <details data-section>
+        <summary><span class="number">04</span><span class="summary-copy"><h3>Interface mobile</h3><p>Afficher juste ce qu'il faut, au bon endroit.</p></span><span class="section-count"></span></summary>
+        <div class="tasks">
+          <label><input type="checkbox">Créer le HUD portrait avec ressources et capacité d'inventaire.</label>
+          <label><input type="checkbox">Ajouter le joystick virtuel à gauche.</label>
+          <label><input type="checkbox">Préparer les boutons nécessaires côté droit.</label>
+          <label><input type="checkbox">Afficher clairement l'inventaire plein.</label>
+          <label><input type="checkbox">Créer l'indicateur de la zone de dépôt du camp.</label>
+          <label><input type="checkbox">Créer le panneau d'amélioration avec coût, niveau et action.</label>
+          <label><input type="checkbox">Ajouter les feedbacks UI de récolte, dépôt et amélioration.</label>
+        </div>
+      </details>
+
+      <details data-section>
+        <summary><span class="number">05</span><span class="summary-copy"><h3>Ressources & récolte</h3><p>Construire le plaisir immédiat du jeu.</p></span><span class="section-count"></span></summary>
+        <div class="tasks">
+          <label><input type="checkbox">Créer une ressource placeholder récoltable.</label>
+          <label><input type="checkbox">Placer plusieurs ressources dans la zone.</label>
+          <label><input type="checkbox">Détecter automatiquement les ressources proches.</label>
+          <label><input type="checkbox">Détruire une ressource après un délai de récolte simple.</label>
+          <label><input type="checkbox">Ajouter animation, particules et mouvement vers le joueur.</label>
+          <label><input type="checkbox">Ajouter les sons courts de récolte et de récupération.</label>
+          <label><input type="checkbox">Remplacer progressivement les placeholders par les premiers assets stylisés.</label>
+        </div>
+      </details>
+
+      <details data-section>
+        <summary><span class="number">06</span><span class="summary-copy"><h3>Inventaire & retour</h3><p>Donner une raison claire de rentrer au camp.</p></span><span class="section-count"></span></summary>
+        <div class="tasks">
+          <label><input type="checkbox">Ajouter une capacité d'inventaire limitée.</label>
+          <label><input type="checkbox">Empêcher ou ralentir la récolte quand l'inventaire est plein.</label>
+          <label><input type="checkbox">Créer la zone de dépôt dans le camp.</label>
+          <label><input type="checkbox">Vider l'inventaire et créditer les ressources au joueur.</label>
+          <label><input type="checkbox">Ajouter un feedback clair lors du dépôt.</label>
+        </div>
+      </details>
+
+      <details data-section>
+        <summary><span class="number">07</span><span class="summary-copy"><h3>Camp & amélioration</h3><p>Faire sentir que chaque sortie transforme le monde.</p></span><span class="section-count"></span></summary>
+        <div class="tasks">
+          <label><input type="checkbox">Créer un camp simple à côté de la zone de récolte.</label>
+          <label><input type="checkbox">Ajouter un bâtiment améliorable.</label>
+          <label><input type="checkbox">Définir un coût fixe en ressources.</label>
+          <label><input type="checkbox">Afficher le coût et le niveau dans l'interface.</label>
+          <label><input type="checkbox">Modifier visuellement le bâtiment après amélioration.</label>
+          <label><input type="checkbox">Ajouter un feedback visuel et sonore de construction.</label>
+        </div>
+      </details>
+
+      <details data-section>
+        <summary><span class="number">08</span><span class="summary-copy"><h3>Progression de zone</h3><p>Créer la première petite promesse d'exploration.</p></span><span class="section-count"></span></summary>
+        <div class="tasks">
+          <label><input type="checkbox">Ajouter une limite ou un obstacle qui bloque la zone suivante.</label>
+          <label><input type="checkbox">Définir une condition de déblocage liée au camp.</label>
+          <label><input type="checkbox">Ouvrir la nouvelle zone après validation.</label>
+          <label><input type="checkbox">Ajouter des ressources différentes ou plus abondantes.</label>
+          <label><input type="checkbox">Ajouter le feedback UI de déblocage.</label>
+        </div>
+      </details>
+
+      <details data-section>
+        <summary><span class="number">09</span><span class="summary-copy"><h3>Polish & test mobile</h3><p>Valider la sensation avant d'ajouter de la profondeur.</p></span><span class="section-count"></span></summary>
+        <div class="tasks">
+          <label><input type="checkbox">Vérifier la lisibilité du joueur, des ressources et du HUD en portrait.</label>
+          <label><input type="checkbox">Ajuster vitesse, rayon de récolte et densité des ressources.</label>
+          <label><input type="checkbox">Tester sur appareil ou résolution mobile simulée.</label>
+          <label><input type="checkbox">Tester les zones tactiles et les marges d'écran.</label>
+          <label><input type="checkbox">Vérifier que les effets, sons et animations ne surchargent pas l'écran.</label>
+          <label><input type="checkbox">Corriger les frictions avant d'ajouter de nouvelles mécaniques.</label>
+        </div>
+      </details>
+    </section>
+
+    <footer class="footer">
+      <span>Document vivant · Phase I : valider la boucle avant le contenu.</span>
+      <button id="reset" type="button">Réinitialiser la progression</button>
+    </footer>
+  </main>
+
+  <script>
+    const key = 'olympus-harvest-roadmap-v1';
+    const checks = [...document.querySelectorAll('input[type="checkbox"]')];
+    const sections = [...document.querySelectorAll('[data-section]')];
+    const saved = JSON.parse(localStorage.getItem(key) || '[]');
+    checks.forEach((check, index) => { check.checked = saved[index] === true; });
+
+    function update() {
+      const done = checks.filter(check => check.checked).length;
+      const percent = checks.length ? Math.round(done / checks.length * 100) : 0;
+      document.querySelector('#percent').textContent = percent + '%';
+      document.querySelector('#progress').style.width = percent + '%';
+      document.querySelector('#progressNote').textContent = percent === 100
+        ? 'Le MVP est prêt pour une vraie session de test.'
+        : done + ' tâche' + (done === 1 ? '' : 's') + ' validée' + (done === 1 ? '' : 's') + ' sur ' + checks.length + '.';
+      sections.forEach(section => {
+        const localChecks = [...section.querySelectorAll('input')];
+        const counter = section.querySelector('.section-count');
+        counter.textContent = localChecks.filter(check => check.checked).length + '/' + localChecks.length;
+      });
+      localStorage.setItem(key, JSON.stringify(checks.map(check => check.checked)));
+    }
+
+    checks.forEach(check => check.addEventListener('change', update));
+    document.querySelector('#reset').addEventListener('click', () => {
+      if (!confirm('Réinitialiser toutes les cases cochées ?')) return;
+      checks.forEach(check => { check.checked = false; });
+      update();
+    });
+    update();
+  </script>
+</body>
+</html>
